@@ -1,5 +1,6 @@
 import streamlit as st
 import nltk
+import os
 import validators
 from langchain.prompts import PromptTemplate
 from langchain_groq import ChatGroq
@@ -7,8 +8,21 @@ from langchain.chains.summarize import load_summarize_chain
 from langchain_community.document_loaders import YoutubeLoader, UnstructuredURLLoader
 
 # Ensure NLTK resources are available
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger')
+nltk_data_dir = os.path.join(os.path.expanduser('~'), 'nltk_data')
+if not os.path.exists(nltk_data_dir):
+    os.makedirs(nltk_data_dir)
+    
+nltk.data.path.append(nltk_data_dir)
+
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt', download_dir=nltk_data_dir)
+
+try:
+    nltk.data.find('taggers/averaged_perceptron_tagger')
+except LookupError:
+    nltk.download('averaged_perceptron_tagger', download_dir=nltk_data_dir)
 
 # Streamlit App Configuration
 st.set_page_config(page_title="LangChain: Summarize Text From YT or Website", page_icon="🦜")
